@@ -13,26 +13,32 @@ def is_valid_ip(ip):
 	except ValueError:
 		return False
 
+
 df = pd.read_json("test-edmi.json")
 df = df[["USERNAME", 'SOURCE_APP']]
-# filter by IP Address
+df = df[:500000]
+# Filter the IP Addresses. Only 1,029,890 rows have usernames
 mask = df['USERNAME'].apply(lambda x: is_valid_ip(x))
 df = df[['USERNAME','SOURCE_APP']][~mask]
-
+print("Finished preprossessing... %d rows ready." % (len(df)))
 df_dummy = pd.get_dummies(df)
+print(len(df_dummy))
 
 #transform into numpy array
 x = df_dummy.reset_index().values
-
-km = kmodes.KModes(n_clusters=7, init='random', n_init=5, verbose=1)
+km = kmodes.KModes(n_clusters=5, init="Huang", n_init=4, verbose=1)
 clusters = km.fit_predict(x)
 df_dummy['clusters'] = clusters
-
+print(df_dummy)
 pca = PCA(2)
 
 # Turn the dummified df into two columns with PCA
-plot_columns = pca.fit_transform(df_dummy.ix[:,0:12])
+plot_columns = pca.fit_transform(df_dummy)
+print(len(plot_columns))
+df_dummy.to_pickle("df_dummy.pkl")
+np.save("pca-transform.pkl", plot_columns)
 
 # Plot based on the two dimensions, and shade by cluster label
-plt.scatter(x=plot_columns[:,1], y=plot_columns[:,0], c=df_dummy["clusters"], s=30)
-plt.show()
+#plt.scatter(x=plot_columns[:,1], y=plot_columns[:,0], c=df_dummy["clusters"], s=10)
+#plt.show()
+print("Done.")

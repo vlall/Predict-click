@@ -16,42 +16,18 @@
 #
 
 import pandas as pd  #imports the pandas library and aliasing as pd
-import re
-
-import nltk
-from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
-
-import numpy as np
-import json
-import csv  #converting new_list to csv file
+from urllib.parse import urlparse
 
 df = pd.read_json('test_edmi.json')
 df = df[:10000]  #only the first 10k rows
 df.to_csv('test_edmi_10k.csv')
 
-# from the first 10k rows, only get these three columns
-condensed_10k = df.loc[:, ['USERNAME', 'SOURCE_APP', 'SOURCE_APP_FUNCTION']]
+# from the first 10k rows, only get these four columns
+condensed_10k = df[['USERNAME', 'SOURCE_APP', 'URI',
+                   'SOURCE_APP_FUNCTION']]
 condensed_10k.to_csv('condensed_10k.csv', index=False)
 
-# filter out NaN items from column 'SOURCE_APP_FUNCTION'
-df = df[pd.notnull(df['SOURCE_APP_FUNCTION'])]
+# Parse a URL into six components, returning a 6-tuple, keep only the path
+df2 = df['URI'].apply(lambda x: urlparse(x)[2].split('/')[1:])
 
-# get items with non-alphanumeric pattern, r for raw string and the + for repeat
-pattern = re.compile(r'\W+')
-
-stop_words = set(stopwords.words('english'))
-word_tokens = word_tokenize(df['SOURCE_APP_FUNCTIONS'])
-item_filtered = [item for item in word_tokens if item not in stop_words]
-for item in df['SOURCE_APP_FUNCTION']:
-
-    # sub non-alphanumeric pattern with a space
-    item_new = re.sub(pattern, ' ', item)
-
-    if item_new not in stop_words:
-        item_filtered.append(item_new)
-        print(item_new)
-
-# still working on this...
-
-
+df2.to_csv('uri.csv', index=False)

@@ -16,7 +16,7 @@ def is_valid_ip(ip):
 
 df = pd.read_json("test-edmi.json")
 df = df[["USERNAME", 'SOURCE_APP']]
-df = df[:1500000]
+df = df[:100000]
 # Filter the IP Addresses. Only 1,029,890 rows have usernames
 mask = df['USERNAME'].apply(lambda x: is_valid_ip(x))
 df = df[['USERNAME','SOURCE_APP']][~mask]
@@ -42,7 +42,7 @@ np.save("pca-transform.pkl", plot_columns)
 
 # Plot based on the two dimensions, and shade by cluster label
 plt.scatter(x=plot_columns[:,1], y=plot_columns[:,0], c=df_dummy["clusters"], s=10)
-#plt.show()
+plt.show()
 print("Done.")
 
 #df.groupby('clusters').size()

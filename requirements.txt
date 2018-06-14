@@ -3,3 +3,4 @@ numpy
 kmodes
 sklearn
 ipaddress
+matplotlib

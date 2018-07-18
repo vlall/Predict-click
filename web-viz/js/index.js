@@ -47,7 +47,7 @@ var circleFill = function(d) {
 }
 
 var calculateTextFontSize = function(d) {
-  return Math.min(2 * d.r, (2 * d.r - 8) / this.getComputedTextLength() * 11) + "px";
+  return Math.min(1 * d.r, (1 * d.r - 1) / this.getComputedTextLength() * 4) + "px";
 }
 
 var margin = 20,
